@@ -58,7 +58,7 @@ export default function Signup() {
 		try {
 			console.log("Signup data:", formData);
 			await new Promise((resolve) => setTimeout(resolve, 1000));
-			
+
 			window.location.href = "/auth/login?message=account-created";
 		} catch {
 			setError("Something went wrong. Please try again.");
@@ -100,7 +100,10 @@ export default function Signup() {
 						<form className="space-y-6" onSubmit={handleSubmit}>
 							<div className="grid grid-cols-2 gap-4">
 								<div>
-									<label htmlFor="firstName" className="mb-2 block text-sm font-medium text-gray-700">
+									<label
+										htmlFor="firstName"
+										className="mb-2 block text-sm font-medium text-gray-700"
+									>
 										First Name
 									</label>
 									<div className="relative">
@@ -121,7 +124,10 @@ export default function Signup() {
 								</div>
 
 								<div>
-									<label htmlFor="lastName" className="mb-2 block text-sm font-medium text-gray-700">
+									<label
+										htmlFor="lastName"
+										className="mb-2 block text-sm font-medium text-gray-700"
+									>
 										Last Name
 									</label>
 									<div className="relative">
@@ -132,7 +138,7 @@ export default function Signup() {
 											required
 											value={formData.lastName}
 											onChange={handleChange}
-											className="focus:ring-coral-500 focus:border-coral-500 block w-full rounded-xl border border-gray-300 py-3 px-4 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2"
+											className="focus:ring-coral-500 focus:border-coral-500 block w-full rounded-xl border border-gray-300 px-4 py-3 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2"
 											placeholder="Doe"
 										/>
 									</div>
@@ -140,7 +146,10 @@ export default function Signup() {
 							</div>
 
 							<div>
-								<label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
+								<label
+									htmlFor="email"
+									className="mb-2 block text-sm font-medium text-gray-700"
+								>
 									Email
 								</label>
 								<div className="relative">
@@ -162,7 +171,10 @@ export default function Signup() {
 							</div>
 
 							<div>
-								<label htmlFor="company" className="mb-2 block text-sm font-medium text-gray-700">
+								<label
+									htmlFor="company"
+									className="mb-2 block text-sm font-medium text-gray-700"
+								>
 									Company
 								</label>
 								<div className="relative">
@@ -183,7 +195,10 @@ export default function Signup() {
 							</div>
 
 							<div>
-								<label htmlFor="role" className="mb-2 block text-sm font-medium text-gray-700">
+								<label
+									htmlFor="role"
+									className="mb-2 block text-sm font-medium text-gray-700"
+								>
 									Role
 								</label>
 								<select
@@ -200,7 +215,10 @@ export default function Signup() {
 							</div>
 
 							<div>
-								<label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-700">
+								<label
+									htmlFor="password"
+									className="mb-2 block text-sm font-medium text-gray-700"
+								>
 									Password
 								</label>
 								<div className="relative">
@@ -233,7 +251,10 @@ export default function Signup() {
 							</div>
 
 							<div>
-								<label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-gray-700">
+								<label
+									htmlFor="confirmPassword"
+									className="mb-2 block text-sm font-medium text-gray-700"
+								>
 									Confirm Password
 								</label>
 								<div className="relative">
@@ -309,11 +330,17 @@ export default function Signup() {
 					<div className="mt-8 text-center">
 						<p className="text-xs text-gray-500">
 							By creating an account, you agree to our{" "}
-							<Link href="/terms" className="text-coral-500 hover:text-coral-600 font-medium">
+							<Link
+								href="/terms"
+								className="text-coral-500 hover:text-coral-600 font-medium"
+							>
 								Terms of Service
 							</Link>{" "}
 							and{" "}
-							<Link href="/privacy" className="text-coral-500 hover:text-coral-600 font-medium">
+							<Link
+								href="/privacy"
+								className="text-coral-500 hover:text-coral-600 font-medium"
+							>
 								Privacy Policy
 							</Link>
 						</p>
@@ -332,4 +359,4 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 	}
 
 	return { props: {} };
-} 
+}

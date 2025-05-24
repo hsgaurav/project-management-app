@@ -9,7 +9,10 @@ export default function Custom404() {
 		<>
 			<Head>
 				<title>Page Not Found - ProjectHub</title>
-				<meta name="description" content="The page you're looking for doesn't exist" />
+				<meta
+					name="description"
+					content="The page you're looking for doesn't exist"
+				/>
 			</Head>
 
 			<div className="flex min-h-screen items-center justify-center bg-white px-6">
@@ -30,7 +33,7 @@ export default function Custom404() {
 
 					<button
 						onClick={() => router.push("/")}
-						className="bg-coral-500 hover:bg-coral-600 inline-flex items-center px-6 py-3 rounded-xl shadow-sm text-white font-medium transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coral-500"
+						className="bg-coral-500 hover:bg-coral-600 focus:ring-coral-500 inline-flex items-center rounded-xl px-6 py-3 font-medium text-white shadow-sm transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2"
 					>
 						Go Home
 					</button>
@@ -38,4 +41,4 @@ export default function Custom404() {
 			</div>
 		</>
 	);
-} 
+}
