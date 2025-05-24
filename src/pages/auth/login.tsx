@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, BarChart3 } from "lucide-react";
 import { authOptions } from "@/server/auth";
 
+// Test comment for pre-commit hook
 export default function Login() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [email, setEmail] = useState("");

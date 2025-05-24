@@ -23,7 +23,14 @@ const config = {
 			"error",
 			{ "allowSameFolder": true, "rootDir": "src", "prefix": "@" }
 		],
-		"react/prefer-read-only-props": "warn"
+		"react/prefer-read-only-props": "warn",
+		"prettier/prettier": [
+			"error",
+			{},
+			{
+				"usePrettierrc": true
+			}
+		]
 	},
 	overrides: [
 		{
