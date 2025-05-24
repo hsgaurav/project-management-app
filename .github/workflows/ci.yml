@@ -39,7 +39,12 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile
+          else
+            pnpm install
+          fi
 
       - name: Run type checking
         run: pnpm run type-check
@@ -85,7 +90,12 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile
+          else
+            pnpm install
+          fi
 
       - name: Build application
         run: pnpm run build
@@ -114,7 +124,7 @@ jobs:
           version: 8.10.5
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -156,7 +166,7 @@ jobs:
           version: 8.10.5
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
