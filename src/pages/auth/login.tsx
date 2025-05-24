@@ -1,6 +1,6 @@
 import { type GetServerSidePropsContext } from "next";
 import { getServerSession } from "next-auth/next";
-import { signIn, getSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
