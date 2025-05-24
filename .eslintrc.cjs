@@ -1,39 +1,38 @@
 const config = {
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    project: true,
-  },
-  plugins: ["@typescript-eslint"],
-  extends: [
-    "next/core-web-vitals",
-    "@typescript-eslint/recommended-type-checked",
-    "@typescript-eslint/stylistic-type-checked",
-  ],
-  rules: {
-    "@typescript-eslint/array-type": "off",
-    "@typescript-eslint/consistent-type-definitions": "off",
-    "@typescript-eslint/consistent-type-imports": [
-      "warn",
-      {
-        prefer: "type-only",
-        fixStyle: "inline-type-imports",
-      },
-    ],
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      {
-        argsIgnorePattern: "^_",
-      },
-    ],
-    "@typescript-eslint/require-await": "off",
-    "@typescript-eslint/no-misused-promises": [
-      "error",
-      {
-        checksVoidReturn: {
-          attributes: false,
-        },
-      },
-    ],
-  },
+	settings: {
+		"import/resolver": {
+			"node": {
+				"paths": ["src"]
+			}
+		}
+	},
+	extends: [
+		"next/core-web-vitals",
+		"plugin:prettier/recommended",
+		"plugin:@typescript-eslint/recommended"
+	],
+	plugins: [
+		"@tanstack/eslint-plugin-query",
+		"no-smart-quotes",
+		"no-relative-import-paths"
+	],
+	rules: {
+		"@typescript-eslint/no-namespace": "off",
+		"react/no-array-index-key": "warn",
+		"no-relative-import-paths/no-relative-import-paths": [
+			"error",
+			{ "allowSameFolder": true, "rootDir": "src", "prefix": "@" }
+		],
+		"react/prefer-read-only-props": "warn"
+	},
+	overrides: [
+		{
+			files: ["src/server/**/*.ts"],
+			rules: {
+				"@typescript-eslint/no-explicit-any": "off",
+			},
+		},
+	]
 };
+
 module.exports = config; 

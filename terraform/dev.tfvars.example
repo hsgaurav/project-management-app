@@ -1,0 +1,12 @@
+aws_region = "us-east-1"
+stage      = "dev"
+
+nextauth_url = "https://your-dev-domain.com"
+
+database_url             = "postgresql://user:password@dev-db-host:5432/dbname"
+nextauth_secret          = "your-dev-nextauth-secret-key"
+discord_client_id        = "your-dev-discord-client-id"
+discord_client_secret    = "your-dev-discord-client-secret"
+supabase_url            = "https://your-dev-project.supabase.co"
+supabase_anon_key       = "your-dev-supabase-anon-key"
+supabase_service_role_key = "your-dev-supabase-service-role-key" 

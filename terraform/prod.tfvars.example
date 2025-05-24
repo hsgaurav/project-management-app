@@ -1,0 +1,12 @@
+aws_region = "us-east-1"
+stage      = "prod"
+
+nextauth_url = "https://your-prod-domain.com"
+
+database_url             = "postgresql://user:password@prod-db-host:5432/dbname"
+nextauth_secret          = "your-prod-nextauth-secret-key"
+discord_client_id        = "your-prod-discord-client-id"
+discord_client_secret    = "your-prod-discord-client-secret"
+supabase_url            = "https://your-prod-project.supabase.co"
+supabase_anon_key       = "your-prod-supabase-anon-key"
+supabase_service_role_key = "your-prod-supabase-service-role-key" 

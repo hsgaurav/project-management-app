@@ -3,26 +3,26 @@ import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import { Inter } from "next/font/google";
 
-import { api } from "~/utils/api";
+import { api } from "@/utils/api";
 
-import "~/styles/globals.css";
+import "@/styles/globals.css";
 
 const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
+	subsets: ["latin"],
+	variable: "--font-sans",
 });
 
 const MyApp: AppType<{ session: Session | null }> = ({
-  Component,
-  pageProps: { session, ...pageProps },
+	Component,
+	pageProps: { session, ...pageProps },
 }) => {
-  return (
-    <SessionProvider session={session}>
-      <div className={`font-sans ${inter.variable}`}>
-        <Component {...pageProps} />
-      </div>
-    </SessionProvider>
-  );
+	return (
+		<SessionProvider session={session}>
+			<div className={`font-sans ${inter.variable}`}>
+				<Component {...pageProps} />
+			</div>
+		</SessionProvider>
+	);
 };
 
-export default api.withTRPC(MyApp); 
+export default api.withTRPC(MyApp);
