@@ -77,7 +77,7 @@ export default function Signup() {
 			<div className="flex min-h-screen flex-col justify-center bg-white py-12 sm:px-6 lg:px-8">
 				<div className="sm:mx-auto sm:w-full sm:max-w-md">
 					<div className="flex justify-center">
-						<div className="bg-coral-500 flex h-12 w-12 items-center justify-center rounded-xl shadow-lg">
+						<div className="flex h-12 w-12 items-center justify-center rounded-xl bg-coral-500 shadow-lg">
 							<BarChart3 className="h-6 w-6 text-white" />
 						</div>
 					</div>
@@ -90,7 +90,7 @@ export default function Signup() {
 				</div>
 
 				<div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-					<div className="shadow-card border border-gray-100 bg-white px-6 py-8 sm:rounded-2xl sm:px-10">
+					<div className="border border-gray-100 bg-white px-6 py-8 shadow-card sm:rounded-2xl sm:px-10">
 						{error && (
 							<div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
 								<p className="text-sm font-medium text-red-600">{error}</p>
@@ -117,7 +117,7 @@ export default function Signup() {
 											required
 											value={formData.firstName}
 											onChange={handleChange}
-											className="focus:ring-coral-500 focus:border-coral-500 block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2"
+											className="block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
 											placeholder="John"
 										/>
 									</div>
@@ -138,7 +138,7 @@ export default function Signup() {
 											required
 											value={formData.lastName}
 											onChange={handleChange}
-											className="focus:ring-coral-500 focus:border-coral-500 block w-full rounded-xl border border-gray-300 px-4 py-3 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2"
+											className="block w-full rounded-xl border border-gray-300 px-4 py-3 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
 											placeholder="Doe"
 										/>
 									</div>
@@ -164,7 +164,7 @@ export default function Signup() {
 										required
 										value={formData.email}
 										onChange={handleChange}
-										className="focus:ring-coral-500 focus:border-coral-500 block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2"
+										className="block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
 										placeholder="john@company.com"
 									/>
 								</div>
@@ -188,7 +188,7 @@ export default function Signup() {
 										required
 										value={formData.company}
 										onChange={handleChange}
-										className="focus:ring-coral-500 focus:border-coral-500 block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2"
+										className="block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
 										placeholder="Your Company"
 									/>
 								</div>
@@ -206,7 +206,7 @@ export default function Signup() {
 									name="role"
 									value={formData.role}
 									onChange={handleChange}
-									className="focus:ring-coral-500 focus:border-coral-500 block w-full rounded-xl border border-gray-300 px-4 py-3 text-base text-gray-700 transition-all duration-200 focus:outline-none focus:ring-2"
+									className="block w-full rounded-xl border border-gray-300 px-4 py-3 text-base text-gray-700 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
 								>
 									<option value="team_member">Team Member</option>
 									<option value="project_manager">Project Manager</option>
@@ -233,7 +233,7 @@ export default function Signup() {
 										required
 										value={formData.password}
 										onChange={handleChange}
-										className="focus:ring-coral-500 focus:border-coral-500 block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-12 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2"
+										className="block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-12 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
 										placeholder="Create a strong password"
 									/>
 									<button
@@ -269,7 +269,7 @@ export default function Signup() {
 										required
 										value={formData.confirmPassword}
 										onChange={handleChange}
-										className="focus:ring-coral-500 focus:border-coral-500 block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-12 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2"
+										className="block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-12 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
 										placeholder="Confirm your password"
 									/>
 									<button
@@ -290,7 +290,7 @@ export default function Signup() {
 								<button
 									type="submit"
 									disabled={isLoading}
-									className="bg-coral-500 hover:bg-coral-600 focus:ring-coral-500 flex w-full justify-center rounded-xl border border-transparent px-4 py-3 text-base font-medium text-white shadow-sm transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+									className="flex w-full justify-center rounded-xl border border-transparent bg-coral-500 px-4 py-3 text-base font-medium text-white shadow-sm transition-all duration-200 hover:bg-coral-600 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-coral-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 								>
 									{isLoading ? (
 										<div className="flex items-center">
@@ -319,7 +319,7 @@ export default function Signup() {
 							<div className="mt-6 text-center">
 								<Link
 									href="/auth/login"
-									className="focus:ring-coral-500 inline-flex items-center rounded-xl border border-gray-300 bg-white px-6 py-3 text-base font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+									className="inline-flex items-center rounded-xl border border-gray-300 bg-white px-6 py-3 text-base font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-coral-500 focus:ring-offset-2"
 								>
 									Sign in
 								</Link>
@@ -332,14 +332,14 @@ export default function Signup() {
 							By creating an account, you agree to our{" "}
 							<Link
 								href="/terms"
-								className="text-coral-500 hover:text-coral-600 font-medium"
+								className="font-medium text-coral-500 hover:text-coral-600"
 							>
 								Terms of Service
 							</Link>{" "}
 							and{" "}
 							<Link
 								href="/privacy"
-								className="text-coral-500 hover:text-coral-600 font-medium"
+								className="font-medium text-coral-500 hover:text-coral-600"
 							>
 								Privacy Policy
 							</Link>

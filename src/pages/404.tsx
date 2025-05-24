@@ -18,7 +18,7 @@ export default function Custom404() {
 			<div className="flex min-h-screen items-center justify-center bg-white px-6">
 				<div className="text-center">
 					<div className="mb-8 flex justify-center">
-						<div className="bg-coral-500 flex h-16 w-16 items-center justify-center rounded-2xl shadow-lg">
+						<div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-coral-500 shadow-lg">
 							<BarChart3 className="h-8 w-8 text-white" />
 						</div>
 					</div>
@@ -33,7 +33,7 @@ export default function Custom404() {
 
 					<button
 						onClick={() => router.push("/")}
-						className="bg-coral-500 hover:bg-coral-600 focus:ring-coral-500 inline-flex items-center rounded-xl px-6 py-3 font-medium text-white shadow-sm transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+						className="inline-flex items-center rounded-xl bg-coral-500 px-6 py-3 font-medium text-white shadow-sm transition-all duration-200 hover:bg-coral-600 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-coral-500 focus:ring-offset-2"
 					>
 						Go Home
 					</button>

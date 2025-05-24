@@ -19,7 +19,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
 				<link rel="alternate icon" href="/favicon.ico" />
 				<meta name="theme-color" content="#FF385C" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
-				<meta name="description" content="ProjectHub - Simple Task Management and Collaboration Tool" />
+				<meta
+					name="description"
+					content="ProjectHub - Simple Task Management and Collaboration Tool"
+				/>
 				<meta name="application-name" content="ProjectHub" />
 				<meta name="apple-mobile-web-app-title" content="ProjectHub" />
 				<style>{`body { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; }`}</style>
