@@ -9,18 +9,17 @@ terraform {
 }
 
 provider "aws" {
-	region = var.aws_region
+	region = var.region
 }
 
 locals {
-	stage = var.stage
-	app_name = "project-management-app"
+	app_name = var.app_name
+	stage    = var.stage
 	
 	common_tags = {
-		Project     = local.app_name
-		Stage       = local.stage
+		Environment = var.stage
+		Project     = var.app_name
 		ManagedBy   = "terraform"
-		Environment = local.stage
 	}
 }
 
@@ -35,73 +34,58 @@ resource "aws_ssm_parameter" "database_url" {
 }
 
 resource "aws_ssm_parameter" "nextauth_secret" {
-	name      = "/${local.app_name}/${local.stage}/NEXTAUTH_SECRET"
-	type      = "SecureString"
-	value     = var.nextauth_secret
-	overwrite = true
-	tags      = local.common_tags
-
-	description = "NextAuth secret for ${local.app_name} ${local.stage}"
+	name        = "/${local.app_name}/${local.stage}/NEXTAUTH_SECRET"
+	type        = "SecureString"
+	value       = var.nextauth_secret
+	overwrite   = true
+	
+	description = "NextAuth.js secret for ${local.app_name} ${local.stage}"
+	
+	tags = local.common_tags
 }
 
 resource "aws_ssm_parameter" "nextauth_url" {
-	name      = "/${local.app_name}/${local.stage}/NEXTAUTH_URL"
-	type      = "String"
-	value     = var.nextauth_url
-	overwrite = true
-	tags      = local.common_tags
-
-	description = "NextAuth URL for ${local.app_name} ${local.stage}"
-}
-
-resource "aws_ssm_parameter" "discord_client_id" {
-	name      = "/${local.app_name}/${local.stage}/DISCORD_CLIENT_ID"
-	type      = "SecureString"
-	value     = var.discord_client_id
-	overwrite = true
-	tags      = local.common_tags
-
-	description = "Discord OAuth client ID for ${local.app_name} ${local.stage}"
-}
-
-resource "aws_ssm_parameter" "discord_client_secret" {
-	name      = "/${local.app_name}/${local.stage}/DISCORD_CLIENT_SECRET"
-	type      = "SecureString"
-	value     = var.discord_client_secret
-	overwrite = true
-	tags      = local.common_tags
-
-	description = "Discord OAuth client secret for ${local.app_name} ${local.stage}"
+	name        = "/${local.app_name}/${local.stage}/NEXTAUTH_URL"
+	type        = "String"
+	value       = var.stage == "prod" ? "https://your-domain.com" : "https://${local.app_name}-${local.stage}.sst.dev"
+	overwrite   = true
+	
+	description = "NextAuth.js URL for ${local.app_name} ${local.stage}"
+	
+	tags = local.common_tags
 }
 
 resource "aws_ssm_parameter" "supabase_url" {
-	name      = "/${local.app_name}/${local.stage}/NEXT_PUBLIC_SUPABASE_URL"
-	type      = "String"
-	value     = var.supabase_url
-	overwrite = true
-	tags      = local.common_tags
-
+	name        = "/${local.app_name}/${local.stage}/NEXT_PUBLIC_SUPABASE_URL"
+	type        = "String"
+	value       = var.supabase_url
+	overwrite   = true
+	
 	description = "Supabase URL for ${local.app_name} ${local.stage}"
+	
+	tags = local.common_tags
 }
 
 resource "aws_ssm_parameter" "supabase_anon_key" {
-	name      = "/${local.app_name}/${local.stage}/NEXT_PUBLIC_SUPABASE_ANON_KEY"
-	type      = "SecureString"
-	value     = var.supabase_anon_key
-	overwrite = true
-	tags      = local.common_tags
-
+	name        = "/${local.app_name}/${local.stage}/NEXT_PUBLIC_SUPABASE_ANON_KEY"
+	type        = "SecureString"
+	value       = var.supabase_anon_key
+	overwrite   = true
+	
 	description = "Supabase anonymous key for ${local.app_name} ${local.stage}"
+	
+	tags = local.common_tags
 }
 
 resource "aws_ssm_parameter" "supabase_service_role_key" {
-	name      = "/${local.app_name}/${local.stage}/SUPABASE_SERVICE_ROLE_KEY"
-	type      = "SecureString"
-	value     = var.supabase_service_role_key
-	overwrite = true
-	tags      = local.common_tags
-
+	name        = "/${local.app_name}/${local.stage}/SUPABASE_SERVICE_ROLE_KEY"
+	type        = "SecureString"
+	value       = var.supabase_service_role_key
+	overwrite   = true
+	
 	description = "Supabase service role key for ${local.app_name} ${local.stage}"
+	
+	tags = local.common_tags
 }
 
 data "aws_ssm_parameters_by_path" "app_config" {
@@ -110,8 +94,6 @@ data "aws_ssm_parameters_by_path" "app_config" {
 		aws_ssm_parameter.database_url,
 		aws_ssm_parameter.nextauth_secret,
 		aws_ssm_parameter.nextauth_url,
-		aws_ssm_parameter.discord_client_id,
-		aws_ssm_parameter.discord_client_secret,
 		aws_ssm_parameter.supabase_url,
 		aws_ssm_parameter.supabase_anon_key,
 		aws_ssm_parameter.supabase_service_role_key,

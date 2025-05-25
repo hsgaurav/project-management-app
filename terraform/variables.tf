@@ -1,16 +1,19 @@
-variable "aws_region" {
-	description = "AWS region for resource deployment"
+variable "stage" {
+	description = "Deployment stage"
 	type        = string
-	default     = "us-east-1"
+	default     = "dev"
 }
 
-variable "stage" {
-	description = "Deployment stage (dev/prod)"
+variable "app_name" {
+	description = "Application name"
 	type        = string
-	validation {
-		condition     = contains(["dev", "prod"], var.stage)
-		error_message = "Stage must be either 'dev' or 'prod'."
-	}
+	default     = "project-management-app"
+}
+
+variable "region" {
+	description = "AWS region"
+	type        = string
+	default     = "us-east-1"
 }
 
 variable "database_url" {
@@ -20,7 +23,7 @@ variable "database_url" {
 }
 
 variable "nextauth_secret" {
-	description = "NextAuth.js secret key for JWT encryption"
+	description = "NextAuth.js secret key"
 	type        = string
 	sensitive   = true
 }
@@ -30,31 +33,19 @@ variable "nextauth_url" {
 	type        = string
 }
 
-variable "discord_client_id" {
-	description = "Discord OAuth application client ID"
-	type        = string
-	sensitive   = true
-}
-
-variable "discord_client_secret" {
-	description = "Discord OAuth application client secret"
-	type        = string
-	sensitive   = true
-}
-
 variable "supabase_url" {
-	description = "Supabase project URL (public)"
+	description = "Supabase project URL"
 	type        = string
 }
 
 variable "supabase_anon_key" {
-	description = "Supabase anonymous/public API key"
+	description = "Supabase anonymous key"
 	type        = string
 	sensitive   = true
 }
 
 variable "supabase_service_role_key" {
-	description = "Supabase service role key for server-side operations"
+	description = "Supabase service role key"
 	type        = string
 	sensitive   = true
 } 

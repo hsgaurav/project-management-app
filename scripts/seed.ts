@@ -3,105 +3,108 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Seeding database...");
+	console.log("Start seeding...");
 
-  // Create users
-  const user1 = await prisma.user.upsert({
-    where: { email: "john@example.com" },
-    update: {},
-    create: {
-      email: "john@example.com",
-      name: "John Doe",
-      image: "https://github.com/shadcn.png",
-    },
-  });
+	const demoUser = await prisma.user.create({
+		data: {
+			id: "demo-user-id",
+			name: "Demo User",
+			email: "demo@example.com",
+		},
+	});
 
-  const user2 = await prisma.user.upsert({
-    where: { email: "jane@example.com" },
-    update: {},
-    create: {
-      email: "jane@example.com",
-      name: "Jane Smith",
-      image: "https://github.com/shadcn.png",
-    },
-  });
+	const demoProject = await prisma.project.create({
+		data: {
+			name: "Demo Project",
+			description: "A sample project for demonstration",
+			creatorId: demoUser.id,
+		},
+	});
 
-  // Create projects
-  const project1 = await prisma.project.upsert({
-    where: { id: "seed-project-1" },
-    update: {},
-    create: {
-      id: "seed-project-1",
-      name: "Project Management System",
-      description: "A comprehensive project management system built with Next.js and Prisma",
-      creatorId: user1.id,
-      members: {
-        create: [
-          {
-            userId: user1.id,
-            role: "OWNER",
-          },
-          {
-            userId: user2.id,
-            role: "ADMIN",
-          },
-        ],
-      },
-    },
-  });
+	await prisma.projectMember.create({
+		data: {
+			userId: demoUser.id,
+			projectId: demoProject.id,
+			role: "OWNER",
+		},
+	});
 
-  // Create tasks
-  await prisma.task.createMany({
-    data: [
-      {
-        id: "seed-task-1",
-        title: "Setup Database Schema",
-        description: "Create and migrate the initial database schema using Prisma",
-        status: "DONE",
-        priority: "HIGH",
-        projectId: project1.id,
-        assigneeId: user1.id,
-        creatorId: user1.id,
-        completedAt: new Date(),
-      },
-      {
-        id: "seed-task-2",
-        title: "Implement Authentication",
-        description: "Set up NextAuth.js with Discord provider",
-        status: "IN_PROGRESS",
-        priority: "HIGH",
-        projectId: project1.id,
-        assigneeId: user2.id,
-        creatorId: user1.id,
-        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      },
-      {
-        id: "seed-task-3",
-        title: "Create Project Dashboard",
-        description: "Build a responsive dashboard for project overview",
-        status: "TODO",
-        priority: "MEDIUM",
-        projectId: project1.id,
-        assigneeId: user1.id,
-        creatorId: user2.id,
-        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      },
-    ],
-  });
+	const demoTasks = await Promise.all([
+		prisma.task.create({
+			data: {
+				title: "Setup development environment",
+				description: "Install and configure all necessary tools",
+				status: "DONE",
+				priority: "HIGH",
+				projectId: demoProject.id,
+				assigneeId: demoUser.id,
+				creatorId: demoUser.id,
+				dueDate: new Date("2024-01-15"),
+			},
+		}),
+		prisma.task.create({
+			data: {
+				title: "Design database schema",
+				description: "Create ERD and define table relationships",
+				status: "IN_PROGRESS",
+				priority: "HIGH",
+				projectId: demoProject.id,
+				assigneeId: demoUser.id,
+				creatorId: demoUser.id,
+				dueDate: new Date("2024-01-20"),
+			},
+		}),
+		prisma.task.create({
+			data: {
+				title: "Implement user authentication",
+				description: "Set up NextAuth.js with email/password authentication",
+				status: "TODO",
+				priority: "MEDIUM",
+				projectId: demoProject.id,
+				assigneeId: demoUser.id,
+				creatorId: demoUser.id,
+				dueDate: new Date("2024-01-25"),
+			},
+		}),
+		prisma.task.create({
+			data: {
+				title: "Create project dashboard",
+				description: "Build main dashboard with project overview",
+				status: "TODO",
+				priority: "MEDIUM",
+				projectId: demoProject.id,
+				assigneeId: demoUser.id,
+				creatorId: demoUser.id,
+				dueDate: new Date("2024-02-01"),
+			},
+		}),
+		prisma.task.create({
+			data: {
+				title: "Deploy to production",
+				description: "Set up CI/CD pipeline and deploy to AWS",
+				status: "TODO",
+				priority: "LOW",
+				projectId: demoProject.id,
+				creatorId: demoUser.id,
+				dueDate: new Date("2024-02-10"),
+			},
+		}),
+	]);
 
-  console.log("✅ Database seeded successfully!");
-  console.log("📊 Created:");
-  console.log("  - 2 users");
-  console.log("  - 1 project");
-  console.log("  - 2 project members");
-  console.log("  - 3 tasks");
+	console.log("Seeding completed successfully!");
+	console.log({
+		user: demoUser,
+		project: demoProject,
+		tasks: demoTasks.length,
+	});
 }
 
 main()
-  .catch((e) => {
-    console.error("❌ Error seeding database:", e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  }); 
+	.then(async () => {
+		await prisma.$disconnect();
+	})
+	.catch(async (e) => {
+		console.error(e);
+		await prisma.$disconnect();
+		process.exit(1);
+	});

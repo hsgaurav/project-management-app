@@ -23,6 +23,33 @@
   a {
     @apply text-coral-500 hover:text-coral-600 transition-colors;
   }
+
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  input[type="password"]::-webkit-credentials-auto-fill-button,
+  input[type="password"]::-webkit-strong-password-auto-fill-button {
+    display: none !important;
+    visibility: hidden;
+    pointer-events: none;
+    height: 0;
+    width: 0;
+    z-index: -1;
+    position: absolute;
+    right: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  input[type="password"] {
+    background-image: none !important;
+    background-position: initial !important;
+    background-repeat: no-repeat !important;
+  }
 }
 
 @layer components {

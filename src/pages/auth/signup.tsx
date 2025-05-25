@@ -1,37 +1,25 @@
 import { type GetServerSidePropsContext } from "next";
 import { getServerSession } from "next-auth/next";
+import { signIn } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
-import {
-	Eye,
-	EyeOff,
-	Mail,
-	Lock,
-	BarChart3,
-	User,
-	Building,
-} from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, BarChart3, User } from "lucide-react";
 import { authOptions } from "@/server/auth";
 
 export default function Signup() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [formData, setFormData] = useState({
-		firstName: "",
-		lastName: "",
+		name: "",
 		email: "",
 		password: "",
 		confirmPassword: "",
-		company: "",
-		role: "team_member",
 	});
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
 
-	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-	) => {
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFormData({
 			...formData,
 			[e.target.name]: e.target.value,
@@ -49,17 +37,43 @@ export default function Signup() {
 			return;
 		}
 
-		if (formData.password.length < 8) {
-			setError("Password must be at least 8 characters long.");
+		if (formData.password.length < 6) {
+			setError("Password must be at least 6 characters long.");
 			setIsLoading(false);
 			return;
 		}
 
 		try {
-			console.log("Signup data:", formData);
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const response = await fetch("/api/auth/signup", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					name: formData.name,
+					email: formData.email,
+					password: formData.password,
+				}),
+			});
 
-			window.location.href = "/auth/login?message=account-created";
+			const data = await response.json();
+
+			if (!response.ok) {
+				setError(data.message || "Something went wrong.");
+				return;
+			}
+
+			const result = await signIn("credentials", {
+				email: formData.email,
+				password: formData.password,
+				redirect: false,
+			});
+
+			if (result?.error) {
+				window.location.href = "/auth/login?message=account-created";
+			} else {
+				window.location.href = "/dashboard";
+			}
 		} catch {
 			setError("Something went wrong. Please try again.");
 		} finally {
@@ -98,50 +112,27 @@ export default function Signup() {
 						)}
 
 						<form className="space-y-6" onSubmit={handleSubmit}>
-							<div className="grid grid-cols-2 gap-4">
-								<div>
-									<label
-										htmlFor="firstName"
-										className="mb-2 block text-sm font-medium text-gray-700"
-									>
-										First Name
-									</label>
-									<div className="relative">
-										<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-											<User className="h-5 w-5 text-gray-400" />
-										</div>
-										<input
-											id="firstName"
-											name="firstName"
-											type="text"
-											required
-											value={formData.firstName}
-											onChange={handleChange}
-											className="block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
-											placeholder="John"
-										/>
+							<div>
+								<label
+									htmlFor="name"
+									className="mb-2 block text-sm font-medium text-gray-700"
+								>
+									Full Name
+								</label>
+								<div className="relative">
+									<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+										<User className="h-5 w-5 text-gray-400" />
 									</div>
-								</div>
-
-								<div>
-									<label
-										htmlFor="lastName"
-										className="mb-2 block text-sm font-medium text-gray-700"
-									>
-										Last Name
-									</label>
-									<div className="relative">
-										<input
-											id="lastName"
-											name="lastName"
-											type="text"
-											required
-											value={formData.lastName}
-											onChange={handleChange}
-											className="block w-full rounded-xl border border-gray-300 px-4 py-3 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
-											placeholder="Doe"
-										/>
-									</div>
+									<input
+										id="name"
+										name="name"
+										type="text"
+										required
+										value={formData.name}
+										onChange={handleChange}
+										className="block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
+										placeholder="John Doe"
+									/>
 								</div>
 							</div>
 
@@ -172,50 +163,6 @@ export default function Signup() {
 
 							<div>
 								<label
-									htmlFor="company"
-									className="mb-2 block text-sm font-medium text-gray-700"
-								>
-									Company
-								</label>
-								<div className="relative">
-									<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-										<Building className="h-5 w-5 text-gray-400" />
-									</div>
-									<input
-										id="company"
-										name="company"
-										type="text"
-										required
-										value={formData.company}
-										onChange={handleChange}
-										className="block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
-										placeholder="Your Company"
-									/>
-								</div>
-							</div>
-
-							<div>
-								<label
-									htmlFor="role"
-									className="mb-2 block text-sm font-medium text-gray-700"
-								>
-									Role
-								</label>
-								<select
-									id="role"
-									name="role"
-									value={formData.role}
-									onChange={handleChange}
-									className="block w-full rounded-xl border border-gray-300 px-4 py-3 text-base text-gray-700 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
-								>
-									<option value="team_member">Team Member</option>
-									<option value="project_manager">Project Manager</option>
-									<option value="team_lead">Team Lead</option>
-								</select>
-							</div>
-
-							<div>
-								<label
 									htmlFor="password"
 									className="mb-2 block text-sm font-medium text-gray-700"
 								>
@@ -234,12 +181,17 @@ export default function Signup() {
 										value={formData.password}
 										onChange={handleChange}
 										className="block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-12 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
-										placeholder="Create a strong password"
+										placeholder="Create a password"
+										data-reveal="false"
+										data-ms-editor="false"
 									/>
 									<button
 										type="button"
-										className="absolute inset-y-0 right-0 flex items-center pr-4"
+										className="absolute inset-y-0 right-0 z-10 flex items-center pr-4 focus:outline-none"
 										onClick={() => setShowPassword(!showPassword)}
+										aria-label={
+											showPassword ? "Hide password" : "Show password"
+										}
 									>
 										{showPassword ? (
 											<EyeOff className="h-5 w-5 text-gray-400 transition-colors hover:text-gray-600" />
@@ -271,11 +223,16 @@ export default function Signup() {
 										onChange={handleChange}
 										className="block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-12 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
 										placeholder="Confirm your password"
+										data-reveal="false"
+										data-ms-editor="false"
 									/>
 									<button
 										type="button"
-										className="absolute inset-y-0 right-0 flex items-center pr-4"
+										className="absolute inset-y-0 right-0 z-10 flex items-center pr-4 focus:outline-none"
 										onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+										aria-label={
+											showConfirmPassword ? "Hide password" : "Show password"
+										}
 									>
 										{showConfirmPassword ? (
 											<EyeOff className="h-5 w-5 text-gray-400 transition-colors hover:text-gray-600" />
@@ -321,14 +278,14 @@ export default function Signup() {
 									href="/auth/login"
 									className="inline-flex items-center rounded-xl border border-gray-300 bg-white px-6 py-3 text-base font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-coral-500 focus:ring-offset-2"
 								>
-									Sign in
+									Sign in to your account
 								</Link>
 							</div>
 						</div>
 					</div>
 
 					<div className="mt-8 text-center">
-						<p className="text-xs text-gray-500">
+						<p className="text-sm text-gray-500">
 							By creating an account, you agree to our{" "}
 							<Link
 								href="/terms"
@@ -343,6 +300,7 @@ export default function Signup() {
 							>
 								Privacy Policy
 							</Link>
+							.
 						</p>
 					</div>
 				</div>
@@ -355,8 +313,15 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 	const session = await getServerSession(context.req, context.res, authOptions);
 
 	if (session) {
-		return { redirect: { destination: "/", permanent: false } };
+		return {
+			redirect: {
+				destination: "/dashboard",
+				permanent: false,
+			},
+		};
 	}
 
-	return { props: {} };
+	return {
+		props: {},
+	};
 }
