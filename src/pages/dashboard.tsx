@@ -9,7 +9,7 @@ export default function Dashboard() {
 	const { data: session } = useSession();
 
 	const handleSignOut = async () => {
-		await signOut({ callbackUrl: "/auth/login" });
+		await signOut({ callbackUrl: "/login" });
 	};
 
 	return (
@@ -140,7 +140,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 	if (!session) {
 		return {
 			redirect: {
-				destination: "/auth/login",
+				destination: "/login",
 				permanent: false,
 			},
 		};
