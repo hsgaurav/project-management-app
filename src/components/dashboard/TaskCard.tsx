@@ -3,7 +3,7 @@ import type { Task } from "./types";
 import { priorityColors, statusIcons, statusColors } from "./constants";
 
 interface TaskCardProps {
-	task: Task;
+	readonly task: Task;
 }
 
 export function TaskCard({ task }: TaskCardProps) {
@@ -45,7 +45,7 @@ export function TaskCard({ task }: TaskCardProps) {
 					</span>
 				</div>
 
-				{task.assignee && (
+				{task.assignee?.name && (
 					<div className="flex items-center gap-1">
 						<div className="flex h-6 w-6 items-center justify-center rounded-full bg-coral-500">
 							<span className="text-xs font-medium text-white">
@@ -62,7 +62,9 @@ export function TaskCard({ task }: TaskCardProps) {
 			{task.dueDate && (
 				<div className="mt-2 flex items-center gap-1 text-xs text-gray-500">
 					<Calendar className="h-3 w-3" />
-					{new Date(task.dueDate).toLocaleDateString()}
+					{task.dueDate instanceof Date
+						? task.dueDate.toLocaleDateString()
+						: new Date(task.dueDate).toLocaleDateString()}
 				</div>
 			)}
 		</div>

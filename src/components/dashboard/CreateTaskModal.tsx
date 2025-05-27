@@ -1,6 +1,6 @@
 interface CreateTaskModalProps {
-	isOpen: boolean;
-	onClose: () => void;
+	readonly isOpen: boolean;
+	readonly onClose: () => void;
 }
 
 export function CreateTaskModal({ isOpen, onClose }: CreateTaskModalProps) {

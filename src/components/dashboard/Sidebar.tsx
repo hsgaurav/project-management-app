@@ -2,10 +2,10 @@ import { Plus, Folder } from "lucide-react";
 import type { Project, TasksByStatus } from "./types";
 
 interface SidebarProps {
-	projects: Project[];
-	selectedProject: string | null;
-	tasksByStatus: TasksByStatus;
-	onProjectSelect: (projectId: string) => void;
+	readonly projects: Project[];
+	readonly selectedProject: string | null;
+	readonly tasksByStatus: TasksByStatus;
+	readonly onProjectSelect: (projectId: string) => void;
 }
 
 export function Sidebar({

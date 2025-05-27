@@ -3,7 +3,7 @@ import { TaskCard } from "./TaskCard";
 import type { TasksByStatus } from "./types";
 
 interface KanbanBoardProps {
-	tasksByStatus: TasksByStatus;
+	readonly tasksByStatus: TasksByStatus;
 }
 
 export function KanbanBoard({ tasksByStatus }: KanbanBoardProps) {

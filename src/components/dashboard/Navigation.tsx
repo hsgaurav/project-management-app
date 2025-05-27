@@ -9,11 +9,11 @@ import {
 } from "lucide-react";
 
 interface NavigationProps {
-	userName?: string | null;
-	userEmail?: string | null;
-	searchTerm: string;
-	onSearchChange: (value: string) => void;
-	onCreateTask: () => void;
+	readonly userName?: string | null;
+	readonly userEmail?: string | null;
+	readonly searchTerm: string;
+	readonly onSearchChange: (value: string) => void;
+	readonly onCreateTask: () => void;
 }
 
 export function Navigation({

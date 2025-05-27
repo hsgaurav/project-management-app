@@ -10,10 +10,9 @@ import {
 	KanbanBoard,
 	CreateTaskModal,
 	DashboardHeader,
-	mockProjects,
-	mockTasks,
 	type TasksByStatus,
 } from "@/components/dashboard";
+import { api } from "@/utils/api";
 
 export default function Dashboard() {
 	const { data: session } = useSession();
@@ -21,7 +20,12 @@ export default function Dashboard() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [showCreateTask, setShowCreateTask] = useState(false);
 
-	const filteredTasks = mockTasks.filter(
+	const { data: projects = [] } = api.project.getAll.useQuery();
+	const { data: allTasks = [] } = api.project.getTasks.useQuery({
+		projectId: selectedProject ?? undefined,
+	});
+
+	const filteredTasks = allTasks.filter(
 		(task) =>
 			task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			task.description?.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -52,7 +56,7 @@ export default function Dashboard() {
 
 				<div className="flex">
 					<Sidebar
-						projects={mockProjects}
+						projects={projects}
 						selectedProject={selectedProject}
 						tasksByStatus={tasksByStatus}
 						onProjectSelect={setSelectedProject}

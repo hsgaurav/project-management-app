@@ -1,7 +1,7 @@
 import { Filter, Settings } from "lucide-react";
 
 interface DashboardHeaderProps {
-	userName?: string | null;
+	readonly userName?: string | null;
 }
 
 export function DashboardHeader({ userName }: DashboardHeaderProps) {
