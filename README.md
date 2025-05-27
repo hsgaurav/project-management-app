@@ -1,5 +1,13 @@
 ﻿# Project Management App
 
+[![CI/CD Pipeline](https://github.com/hsgaurav/project-management-app/actions/workflows/ci.yml/badge.svg)](https://github.com/hsgaurav/project-management-app/actions/workflows/ci.yml)
+[![Deploy to AWS](https://github.com/hsgaurav/project-management-app/actions/workflows/deploy.yml/badge.svg)](https://github.com/hsgaurav/project-management-app/actions/workflows/deploy.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![tRPC](https://img.shields.io/badge/tRPC-2596BE?style=flat&logo=trpc&logoColor=white)](https://trpc.io/)
+[![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white)](https://prisma.io/)
+[![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat&logo=amazon-aws&logoColor=white)](https://aws.amazon.com/)
+
 A comprehensive task management and collaboration platform built with modern web technologies. This application provides teams with powerful tools to organize projects, manage tasks, and collaborate effectively.
 
 
@@ -188,6 +196,42 @@ npm run test:coverage
 - Database operations
 - Form validation
 
+## 🚀 CI/CD Pipeline
+
+The project includes a comprehensive CI/CD pipeline using GitHub Actions with two main workflows:
+
+### 🔄 CI Pipeline (`ci.yml`)
+**Triggers:** Push/PR to `main` or `develop` branches
+
+**Pipeline Steps:**
+- ✅ **Code Quality Checks**
+  - TypeScript type checking
+  - ESLint code linting
+  - Prettier formatting validation
+- 🧪 **Testing**
+  - Unit and integration tests
+  - Test coverage reporting
+- 🏗️ **Build Verification**
+  - Production build validation
+  - Bundle analysis and optimization
+
+### 🚀 Deployment Pipeline (`deploy.yml`)
+**Triggers:** Successful CI pipeline on `main`/`develop` branches
+
+**Infrastructure Deployment:**
+- 🏗️ **Terraform Infrastructure**
+  - AWS resource provisioning
+  - Environment-specific configurations
+  - Parameter Store management
+- 📦 **Application Deployment**
+  - SST (Serverless Stack) deployment
+  - Environment variable injection
+  - Production optimizations
+
+**Environment Strategy:**
+- `main` branch → **Production** environment
+- `develop` branch → **Development** environment
+
 ## 📦 Deployment
 
 ### Production Build
@@ -204,6 +248,7 @@ Ensure all environment variables are configured in your production environment:
 - Database connection strings
 - NextAuth configuration
 - API keys and secrets
+- AWS credentials for deployment
 
 ## 🔧 Development
 
