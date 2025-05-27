@@ -100,8 +100,8 @@ model Task {
     assigneeId  String?
     assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
     
-    creatorId   String
-    creator     User       @relation("TaskCreator", fields: [creatorId], references: [id])
+    createdById String
+    createdBy   User       @relation("TaskCreator", fields: [createdById], references: [id])
     
     dueDate     DateTime?
     completedAt DateTime?
@@ -119,7 +119,6 @@ enum ProjectRole {
 enum TaskStatus {
     TODO
     IN_PROGRESS
-    IN_REVIEW
     DONE
 }
 
@@ -127,5 +126,4 @@ enum Priority {
     LOW
     MEDIUM
     HIGH
-    URGENT
 } 

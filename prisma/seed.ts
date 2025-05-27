@@ -44,7 +44,7 @@ async function main() {
 
 	const bob = await prisma.user.create({
 		data: {
-			name: "Bob Wilson",
+			name: "Bob Johnson",
 			email: "bob@example.com",
 			password: hashedPassword,
 			onboardingCompleted: true,
@@ -62,7 +62,7 @@ async function main() {
 
 	const mike = await prisma.user.create({
 		data: {
-			name: "Mike Johnson",
+			name: "Mike Wilson",
 			email: "mike@example.com",
 			password: hashedPassword,
 			onboardingCompleted: true,
@@ -75,23 +75,23 @@ async function main() {
 	const websiteProject = await prisma.project.create({
 		data: {
 			name: "Website Redesign",
-			description: "Complete redesign of company website",
+			description: "Complete redesign of the company website with modern UI/UX",
 			creatorId: john.id,
 		},
 	});
 
 	const mobileProject = await prisma.project.create({
 		data: {
-			name: "Mobile App",
-			description: "iOS and Android mobile application",
+			name: "Mobile App Development",
+			description: "Native mobile app for iOS and Android platforms",
 			creatorId: jane.id,
 		},
 	});
 
 	const marketingProject = await prisma.project.create({
 		data: {
-			name: "Marketing Campaign",
-			description: "Q4 marketing campaign launch",
+			name: "Q4 Marketing Campaign",
+			description: "Comprehensive marketing campaign for Q4 product launch",
 			creatorId: bob.id,
 		},
 	});
@@ -120,11 +120,6 @@ async function main() {
 			{
 				projectId: websiteProject.id,
 				userId: alice.id,
-				role: ProjectRole.MEMBER,
-			},
-			{
-				projectId: websiteProject.id,
-				userId: mike.id,
 				role: ProjectRole.MEMBER,
 			},
 
@@ -174,27 +169,27 @@ async function main() {
 				priority: Priority.HIGH,
 				projectId: websiteProject.id,
 				assigneeId: john.id,
-				creatorId: jane.id,
+				createdById: jane.id,
 				dueDate: new Date("2024-03-15"),
 			},
 			{
 				title: "Implement user authentication",
 				description: "Set up NextAuth.js with email/password authentication",
 				status: TaskStatus.IN_PROGRESS,
-				priority: Priority.URGENT,
+				priority: Priority.HIGH,
 				projectId: websiteProject.id,
 				assigneeId: jane.id,
-				creatorId: john.id,
+				createdById: john.id,
 				dueDate: new Date("2024-03-10"),
 			},
 			{
 				title: "Setup responsive layout",
 				description: "Implement responsive design for mobile and tablet",
-				status: TaskStatus.IN_REVIEW,
+				status: TaskStatus.TODO,
 				priority: Priority.MEDIUM,
 				projectId: websiteProject.id,
 				assigneeId: bob.id,
-				creatorId: john.id,
+				createdById: john.id,
 				dueDate: new Date("2024-03-20"),
 			},
 			{
@@ -204,7 +199,7 @@ async function main() {
 				priority: Priority.LOW,
 				projectId: websiteProject.id,
 				assigneeId: alice.id,
-				creatorId: jane.id,
+				createdById: jane.id,
 				completedAt: new Date("2024-02-28"),
 			},
 
@@ -216,7 +211,7 @@ async function main() {
 				priority: Priority.HIGH,
 				projectId: mobileProject.id,
 				assigneeId: bob.id,
-				creatorId: jane.id,
+				createdById: jane.id,
 				dueDate: new Date("2024-03-25"),
 			},
 			{
@@ -226,27 +221,27 @@ async function main() {
 				priority: Priority.MEDIUM,
 				projectId: mobileProject.id,
 				assigneeId: alice.id,
-				creatorId: jane.id,
+				createdById: jane.id,
 				dueDate: new Date("2024-04-01"),
 			},
 			{
 				title: "Setup push notifications",
 				description: "Implement push notification system",
-				status: TaskStatus.IN_REVIEW,
+				status: TaskStatus.TODO,
 				priority: Priority.LOW,
 				projectId: mobileProject.id,
 				assigneeId: jane.id,
-				creatorId: bob.id,
+				createdById: bob.id,
 				dueDate: new Date("2024-04-10"),
 			},
 			{
 				title: "App store submission",
 				description: "Submit app to iOS App Store and Google Play",
 				status: TaskStatus.TODO,
-				priority: Priority.URGENT,
+				priority: Priority.MEDIUM,
 				projectId: mobileProject.id,
 				assigneeId: jane.id,
-				creatorId: bob.id,
+				createdById: bob.id,
 				dueDate: new Date("2024-04-30"),
 			},
 
@@ -258,7 +253,7 @@ async function main() {
 				priority: Priority.HIGH,
 				projectId: marketingProject.id,
 				assigneeId: alice.id,
-				creatorId: bob.id,
+				createdById: bob.id,
 				dueDate: new Date("2024-03-30"),
 			},
 			{
@@ -268,7 +263,7 @@ async function main() {
 				priority: Priority.MEDIUM,
 				projectId: marketingProject.id,
 				assigneeId: mike.id,
-				creatorId: bob.id,
+				createdById: bob.id,
 				dueDate: new Date("2024-04-05"),
 			},
 			{
@@ -278,17 +273,17 @@ async function main() {
 				priority: Priority.LOW,
 				projectId: marketingProject.id,
 				assigneeId: alice.id,
-				creatorId: bob.id,
+				createdById: bob.id,
 				completedAt: new Date("2024-02-25"),
 			},
 			{
 				title: "Analytics tracking",
 				description: "Setup campaign performance tracking",
-				status: TaskStatus.IN_REVIEW,
+				status: TaskStatus.TODO,
 				priority: Priority.MEDIUM,
 				projectId: marketingProject.id,
 				assigneeId: john.id,
-				creatorId: alice.id,
+				createdById: alice.id,
 				dueDate: new Date("2024-04-15"),
 			},
 		],

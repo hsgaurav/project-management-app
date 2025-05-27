@@ -18,11 +18,20 @@ export default function Dashboard() {
 	const [showCreateTask, setShowCreateTask] = useState(false);
 
 	const { data: projects = [] } = api.project.getAll.useQuery();
-	const { data: allTasks = [] } = api.project.getTasks.useQuery({
-		projectId: selectedProject ?? undefined,
-	});
 
-	const filteredTasks = allTasks.filter(
+	const { data: allTasks = [] } = api.task.getByProject.useQuery(
+		{ projectId: selectedProject! },
+		{ enabled: !!selectedProject },
+	);
+
+	const { data: myTasks = [] } = api.task.getMyTasks.useQuery(
+		{ projectId: selectedProject ?? undefined },
+		{ enabled: !selectedProject },
+	);
+
+	const tasksToShow = selectedProject ? allTasks : myTasks;
+
+	const filteredTasks = tasksToShow.filter(
 		(task) =>
 			task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			task.description?.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -31,7 +40,6 @@ export default function Dashboard() {
 	const tasksByStatus: TasksByStatus = {
 		TODO: filteredTasks.filter((task) => task.status === "TODO"),
 		IN_PROGRESS: filteredTasks.filter((task) => task.status === "IN_PROGRESS"),
-		IN_REVIEW: filteredTasks.filter((task) => task.status === "IN_REVIEW"),
 		DONE: filteredTasks.filter((task) => task.status === "DONE"),
 	};
 

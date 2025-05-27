@@ -7,7 +7,7 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task }: TaskCardProps) {
-	const StatusIcon = statusIcons[task.status];
+	const StatusIcon = statusIcons[task.status as keyof typeof statusIcons];
 
 	return (
 		<div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md">
@@ -27,7 +27,7 @@ export function TaskCard({ task }: TaskCardProps) {
 			<div className="mb-3 flex items-center gap-2">
 				<span
 					className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-						priorityColors[task.priority]
+						priorityColors[task.priority as keyof typeof priorityColors]
 					}`}
 				>
 					{task.priority}
@@ -39,7 +39,9 @@ export function TaskCard({ task }: TaskCardProps) {
 
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-2">
-					<StatusIcon className={`h-4 w-4 ${statusColors[task.status]}`} />
+					<StatusIcon
+						className={`h-4 w-4 ${statusColors[task.status as keyof typeof statusColors]}`}
+					/>
 					<span className="text-xs text-gray-500">
 						{task.status.replace("_", " ")}
 					</span>

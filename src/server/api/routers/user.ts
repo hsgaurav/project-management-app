@@ -1,16 +1,29 @@
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const userRouter = createTRPCRouter({
+	getProfile: protectedProcedure.query(async ({ ctx }) => {
+		return ctx.db.user.findUnique({
+			where: { id: ctx.session.user.id },
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				onboardingCompleted: true,
+				createdAt: true,
+			},
+		});
+	}),
+
 	completeOnboarding: protectedProcedure.mutation(async ({ ctx }) => {
 		return ctx.db.user.update({
-			where: { id: ctx.session!.user.id },
+			where: { id: ctx.session.user.id },
 			data: { onboardingCompleted: true },
 		});
 	}),
 
 	getOnboardingStatus: protectedProcedure.query(async ({ ctx }) => {
 		const user = await ctx.db.user.findUnique({
-			where: { id: ctx.session!.user.id },
+			where: { id: ctx.session.user.id },
 			select: { onboardingCompleted: true },
 		});
 		return user?.onboardingCompleted ?? false;
