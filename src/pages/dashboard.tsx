@@ -1,9 +1,6 @@
-import { type GetServerSidePropsContext } from "next";
-import { getServerSession } from "next-auth/next";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useState } from "react";
-import { authOptions } from "@/server/auth";
 import {
 	Navigation,
 	Sidebar,
@@ -75,21 +72,4 @@ export default function Dashboard() {
 			</div>
 		</>
 	);
-}
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-	const session = await getServerSession(context.req, context.res, authOptions);
-
-	if (!session) {
-		return {
-			redirect: {
-				destination: "/login",
-				permanent: false,
-			},
-		};
-	}
-
-	return {
-		props: {},
-	};
 }

@@ -1,5 +1,3 @@
-import { type GetServerSidePropsContext } from "next";
-import { getServerSession } from "next-auth/next";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useState } from "react";
@@ -11,9 +9,7 @@ import {
 	UserPlus,
 	FolderPlus,
 } from "lucide-react";
-import { authOptions } from "@/server/auth";
 import { api } from "@/utils/api";
-import { db } from "@/server/db";
 
 type OnboardingStep =
 	| "welcome"
@@ -305,36 +301,4 @@ export default function Onboarding() {
 			</div>
 		</>
 	);
-}
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-	const session = await getServerSession(context.req, context.res, authOptions);
-
-	if (!session) {
-		return {
-			redirect: {
-				destination: "/login",
-				permanent: false,
-			},
-		};
-	}
-
-	// If user has already completed onboarding, redirect to dashboard
-	const user = await db.user.findUnique({
-		where: { id: session.user.id },
-		select: { onboardingCompleted: true },
-	});
-
-	if (user?.onboardingCompleted) {
-		return {
-			redirect: {
-				destination: "/dashboard",
-				permanent: false,
-			},
-		};
-	}
-
-	return {
-		props: {},
-	};
 }

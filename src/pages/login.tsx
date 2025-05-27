@@ -1,11 +1,8 @@
-import { type GetServerSidePropsContext } from "next";
-import { getServerSession } from "next-auth/next";
 import { signIn } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, BarChart3 } from "lucide-react";
-import { authOptions } from "@/server/auth";
 
 export default function Login() {
 	const [showPassword, setShowPassword] = useState(false);
@@ -224,14 +221,4 @@ export default function Login() {
 			</div>
 		</>
 	);
-}
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-	const session = await getServerSession(context.req, context.res, authOptions);
-
-	if (session) {
-		return { redirect: { destination: "/", permanent: false } };
-	}
-
-	return { props: {} };
 }
