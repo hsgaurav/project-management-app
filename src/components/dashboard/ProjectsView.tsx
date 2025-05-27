@@ -1,13 +1,11 @@
 import { useState } from "react";
-import {
-	Users,
-	Calendar,
-	MoreHorizontal,
-	Plus,
-	FolderOpen,
-	CheckCircle2,
-} from "lucide-react";
+import { Users, Calendar, Plus, FolderOpen, CheckCircle2 } from "lucide-react";
 import { api } from "@/utils/api";
+import { ProjectDetailsModal } from "./ProjectDetailsModal";
+import { EditProjectModal } from "./EditProjectModal";
+import { ManageMembersModal } from "./ManageMembersModal";
+import { DeleteProjectModal } from "./DeleteProjectModal";
+import { ProjectActionsMenu } from "./ProjectActionsMenu";
 import type { RouterOutputs } from "@/utils/api";
 
 type Project = RouterOutputs["project"]["getAll"][number];
@@ -21,6 +19,12 @@ export function ProjectsView({
 	searchTerm,
 	onCreateProject,
 }: ProjectsViewProps) {
+	const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+	const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+	const [editModalOpen, setEditModalOpen] = useState(false);
+	const [membersModalOpen, setMembersModalOpen] = useState(false);
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
 	const { data: projects = [], isLoading } = api.project.getAll.useQuery();
 
 	const filteredProjects = projects.filter(
@@ -82,21 +86,71 @@ export function ProjectsView({
 			) : (
 				<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 					{filteredProjects.map((project) => (
-						<ProjectCard key={project.id} project={project} />
+						<ProjectCard
+							key={project.id}
+							project={project}
+							onViewDetails={(project) => {
+								setSelectedProject(project);
+								setDetailsModalOpen(true);
+							}}
+							onEdit={(project) => {
+								setSelectedProject(project);
+								setEditModalOpen(true);
+							}}
+							onManageMembers={(project) => {
+								setSelectedProject(project);
+								setMembersModalOpen(true);
+							}}
+							onDelete={(project) => {
+								setSelectedProject(project);
+								setDeleteModalOpen(true);
+							}}
+						/>
 					))}
 				</div>
 			)}
+
+			<ProjectDetailsModal
+				project={selectedProject}
+				isOpen={detailsModalOpen}
+				onClose={() => setDetailsModalOpen(false)}
+			/>
+			<EditProjectModal
+				project={selectedProject}
+				isOpen={editModalOpen}
+				onClose={() => setEditModalOpen(false)}
+				onSuccess={() => {}}
+			/>
+			<ManageMembersModal
+				project={selectedProject}
+				isOpen={membersModalOpen}
+				onClose={() => setMembersModalOpen(false)}
+			/>
+			<DeleteProjectModal
+				project={selectedProject}
+				isOpen={deleteModalOpen}
+				onClose={() => setDeleteModalOpen(false)}
+				onSuccess={() => {}}
+			/>
 		</div>
 	);
 }
 
 interface ProjectCardProps {
 	readonly project: Project;
+	readonly onViewDetails: (project: Project) => void;
+	readonly onEdit: (project: Project) => void;
+	readonly onManageMembers: (project: Project) => void;
+	readonly onDelete: (project: Project) => void;
 }
 
-function ProjectCard({ project }: ProjectCardProps) {
-	const [showMenu, setShowMenu] = useState(false);
-
+function ProjectCard({
+	project,
+	onViewDetails,
+	onEdit,
+	onManageMembers,
+	onDelete,
+}: ProjectCardProps) {
 	const formatDate = (date: Date | string) => {
 		const d = typeof date === "string" ? new Date(date) : date;
 		return d.toLocaleDateString("en-US", {
@@ -119,31 +173,13 @@ function ProjectCard({ project }: ProjectCardProps) {
 						</p>
 					)}
 				</div>
-				<div className="relative">
-					<button
-						onClick={() => setShowMenu(!showMenu)}
-						className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-					>
-						<MoreHorizontal className="h-4 w-4" />
-					</button>
-					{showMenu && (
-						<div className="absolute right-0 top-8 z-10 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
-							<button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
-								View Details
-							</button>
-							<button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
-								Edit Project
-							</button>
-							<button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
-								Manage Members
-							</button>
-							<hr className="my-1" />
-							<button className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50">
-								Archive Project
-							</button>
-						</div>
-					)}
-				</div>
+				<ProjectActionsMenu
+					project={project}
+					onViewDetails={() => onViewDetails(project)}
+					onEdit={() => onEdit(project)}
+					onManageMembers={() => onManageMembers(project)}
+					onDelete={() => onDelete(project)}
+				/>
 			</div>
 
 			<div className="mt-4 space-y-3">

@@ -157,4 +157,222 @@ export const projectRouter = createTRPCRouter({
 
 			return tasks;
 		}),
+
+	getMembers: protectedProcedure
+		.input(z.object({ projectId: z.string() }))
+		.query(async ({ ctx, input }) => {
+			const project = await ctx.db.project.findFirst({
+				where: {
+					id: input.projectId,
+					members: {
+						some: {
+							userId: ctx.session!.user.id,
+						},
+					},
+				},
+			});
+
+			if (!project) {
+				throw new Error("Project not found or access denied");
+			}
+
+			const members = await ctx.db.projectMember.findMany({
+				where: {
+					projectId: input.projectId,
+				},
+				include: {
+					user: {
+						select: {
+							id: true,
+							name: true,
+							email: true,
+						},
+					},
+				},
+				orderBy: {
+					role: "asc",
+				},
+			});
+
+			return members;
+		}),
+
+	update: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				name: z.string().min(1),
+				description: z.string().optional(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const project = await ctx.db.project.findFirst({
+				where: {
+					id: input.id,
+					members: {
+						some: {
+							userId: ctx.session!.user.id,
+							role: {
+								in: [ProjectRole.OWNER, ProjectRole.ADMIN],
+							},
+						},
+					},
+				},
+			});
+
+			if (!project) {
+				throw new Error("Project not found or insufficient permissions");
+			}
+
+			const updatedProject = await ctx.db.project.update({
+				where: { id: input.id },
+				data: {
+					name: input.name,
+					description: input.description,
+				},
+			});
+
+			return updatedProject;
+		}),
+
+	addMember: protectedProcedure
+		.input(
+			z.object({
+				projectId: z.string(),
+				email: z.string().email(),
+				role: z.enum([ProjectRole.MEMBER, ProjectRole.ADMIN]),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const project = await ctx.db.project.findFirst({
+				where: {
+					id: input.projectId,
+					members: {
+						some: {
+							userId: ctx.session!.user.id,
+							role: {
+								in: [ProjectRole.OWNER, ProjectRole.ADMIN],
+							},
+						},
+					},
+				},
+			});
+
+			if (!project) {
+				throw new Error("Project not found or insufficient permissions");
+			}
+
+			const user = await ctx.db.user.findUnique({
+				where: { email: input.email },
+			});
+
+			if (!user) {
+				throw new Error("User not found");
+			}
+
+			const existingMember = await ctx.db.projectMember.findUnique({
+				where: {
+					projectId_userId: {
+						projectId: input.projectId,
+						userId: user.id,
+					},
+				},
+			});
+
+			if (existingMember) {
+				throw new Error("User is already a member of this project");
+			}
+
+			const member = await ctx.db.projectMember.create({
+				data: {
+					projectId: input.projectId,
+					userId: user.id,
+					role: input.role,
+				},
+				include: {
+					user: {
+						select: {
+							id: true,
+							name: true,
+							email: true,
+						},
+					},
+				},
+			});
+
+			return member;
+		}),
+
+	removeMember: protectedProcedure
+		.input(
+			z.object({
+				projectId: z.string(),
+				memberId: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const project = await ctx.db.project.findFirst({
+				where: {
+					id: input.projectId,
+					members: {
+						some: {
+							userId: ctx.session!.user.id,
+							role: {
+								in: [ProjectRole.OWNER, ProjectRole.ADMIN],
+							},
+						},
+					},
+				},
+			});
+
+			if (!project) {
+				throw new Error("Project not found or insufficient permissions");
+			}
+
+			const memberToRemove = await ctx.db.projectMember.findUnique({
+				where: { id: input.memberId },
+			});
+
+			if (!memberToRemove || memberToRemove.projectId !== input.projectId) {
+				throw new Error("Member not found");
+			}
+
+			if (memberToRemove.role === ProjectRole.OWNER) {
+				throw new Error("Cannot remove project owner");
+			}
+
+			await ctx.db.projectMember.delete({
+				where: { id: input.memberId },
+			});
+
+			return { success: true };
+		}),
+
+	delete: protectedProcedure
+		.input(z.object({ id: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			const project = await ctx.db.project.findFirst({
+				where: {
+					id: input.id,
+					members: {
+						some: {
+							userId: ctx.session!.user.id,
+							role: ProjectRole.OWNER,
+						},
+					},
+				},
+			});
+
+			if (!project) {
+				throw new Error(
+					"Project not found or insufficient permissions (only owners can delete)",
+				);
+			}
+
+			await ctx.db.project.delete({
+				where: { id: input.id },
+			});
+
+			return { success: true };
+		}),
 });
