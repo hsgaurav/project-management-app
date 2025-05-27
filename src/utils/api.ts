@@ -58,10 +58,9 @@ export const api = createTRPCNext<AppRouter>({
 					queries: {
 						retry: (failureCount, error) => {
 							// Don't retry on 4xx errors
-							if (
-								error?.data?.httpStatus >= 400 &&
-								error?.data?.httpStatus < 500
-							) {
+							const httpStatus = (error as { data?: { httpStatus?: number } })
+								?.data?.httpStatus;
+							if (httpStatus && httpStatus >= 400 && httpStatus < 500) {
 								return false;
 							}
 							// Retry up to 3 times for other errors

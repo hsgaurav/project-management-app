@@ -8,20 +8,28 @@ import {
 	ChevronDown,
 } from "lucide-react";
 
+export type ViewType = "tasks" | "projects" | "teams";
+
 interface NavigationProps {
 	readonly userName?: string | null;
 	readonly userEmail?: string | null;
 	readonly searchTerm: string;
+	readonly currentView: ViewType;
 	readonly onSearchChange: (value: string) => void;
+	readonly onViewChange: (view: ViewType) => void;
 	readonly onCreateTask: () => void;
+	readonly onCreateProject: () => void;
 }
 
 export function Navigation({
 	userName,
 	userEmail,
 	searchTerm,
+	currentView,
 	onSearchChange,
+	onViewChange,
 	onCreateTask,
+	onCreateProject,
 }: NavigationProps) {
 	const handleSignOut = async () => {
 		await signOut({ callbackUrl: "/login" });
@@ -42,13 +50,34 @@ export function Navigation({
 						</div>
 
 						<div className="hidden md:flex items-center gap-6">
-							<button className="text-sm font-medium text-gray-700 hover:text-coral-600">
+							<button
+								onClick={() => onViewChange("projects")}
+								className={`text-sm font-medium transition-colors ${
+									currentView === "projects"
+										? "text-coral-600 border-b-2 border-coral-600 pb-1"
+										: "text-gray-700 hover:text-coral-600"
+								}`}
+							>
 								Projects
 							</button>
-							<button className="text-sm font-medium text-gray-700 hover:text-coral-600">
+							<button
+								onClick={() => onViewChange("tasks")}
+								className={`text-sm font-medium transition-colors ${
+									currentView === "tasks"
+										? "text-coral-600 border-b-2 border-coral-600 pb-1"
+										: "text-gray-700 hover:text-coral-600"
+								}`}
+							>
 								Tasks
 							</button>
-							<button className="text-sm font-medium text-gray-700 hover:text-coral-600">
+							<button
+								onClick={() => onViewChange("teams")}
+								className={`text-sm font-medium transition-colors ${
+									currentView === "teams"
+										? "text-coral-600 border-b-2 border-coral-600 pb-1"
+										: "text-gray-700 hover:text-coral-600"
+								}`}
+							>
 								Teams
 							</button>
 						</div>
@@ -66,13 +95,25 @@ export function Navigation({
 							/>
 						</div>
 
-						<button
-							onClick={onCreateTask}
-							className="flex items-center gap-2 rounded-lg bg-coral-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-coral-600"
-						>
-							<Plus className="h-4 w-4" />
-							Create Task
-						</button>
+						{currentView === "tasks" && (
+							<button
+								onClick={onCreateTask}
+								className="flex items-center gap-2 rounded-lg bg-coral-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-coral-600"
+							>
+								<Plus className="h-4 w-4" />
+								Create Task
+							</button>
+						)}
+
+						{currentView === "projects" && (
+							<button
+								onClick={onCreateProject}
+								className="flex items-center gap-2 rounded-lg bg-coral-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-coral-600"
+							>
+								<Plus className="h-4 w-4" />
+								New Project
+							</button>
+						)}
 
 						<div className="flex items-center gap-2">
 							<User className="h-5 w-5 text-gray-400" />

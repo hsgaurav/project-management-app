@@ -1,8 +1,10 @@
 export { TaskCard } from "./TaskCard";
-export { Navigation } from "./Navigation";
+export { Navigation, type ViewType } from "./Navigation";
 export { Sidebar } from "./Sidebar";
 export { KanbanBoard } from "./KanbanBoard";
 export { CreateTaskModal } from "./CreateTaskModal";
+export { CreateProjectModal } from "./CreateProjectModal";
+export { ProjectsView } from "./ProjectsView";
 export { DashboardHeader } from "./DashboardHeader";
 export type { Task, Project, TasksByStatus } from "./types";
 export { priorityColors, statusIcons, statusColors } from "./constants";
