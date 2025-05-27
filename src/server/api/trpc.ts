@@ -70,7 +70,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 const t = initTRPC.context<typeof createTRPCContext>().create({
 	transformer: superjson,
-	errorFormatter({ shape, error }: { shape: any; error: any }) {
+	errorFormatter({ shape, error }) {
 		return {
 			...shape,
 			data: {
@@ -107,19 +107,18 @@ export const publicProcedure = t.procedure;
 /**
  * Reusable middleware that enforces users are logged in before running the procedure.
  */
-const enforceUserIsAuthed = t.middleware(
-	({ ctx, next }: { ctx: any; next: any }) => {
-		if (!ctx.session || !ctx.session.user) {
-			throw new TRPCError({ code: "UNAUTHORIZED" });
-		}
-		return next({
-			ctx: {
-				// infers the `session` as non-nullable
-				session: { ...ctx.session, user: ctx.session.user },
-			},
-		});
-	},
-);
+const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+	if (!ctx.session || !ctx.session.user) {
+		throw new TRPCError({ code: "UNAUTHORIZED" });
+	}
+	return next({
+		ctx: {
+			// infers the `session` as non-nullable
+			session: { ...ctx.session, user: ctx.session.user },
+			db: ctx.db,
+		},
+	});
+});
 
 /**
  * Protected (authenticated) procedure

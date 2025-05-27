@@ -41,8 +41,39 @@ export const api = createTRPCNext<AppRouter>({
 				}),
 				httpBatchLink({
 					url: `${getBaseUrl()}/api/trpc`,
+					/**
+					 * Headers function to add authentication token
+					 */
+					headers() {
+						return {};
+					},
 				}),
 			],
+			/**
+			 * Query client options
+			 * @see https://tanstack.com/query/v4/docs/reference/QueryClient
+			 */
+			queryClientConfig: {
+				defaultOptions: {
+					queries: {
+						retry: (failureCount, error) => {
+							// Don't retry on 4xx errors
+							const httpStatus = (error as { data?: { httpStatus?: number } })
+								?.data?.httpStatus;
+							if (httpStatus && httpStatus >= 400 && httpStatus < 500) {
+								return false;
+							}
+							// Retry up to 3 times for other errors
+							return failureCount < 3;
+						},
+						refetchOnWindowFocus: false,
+						staleTime: 5 * 60 * 1000, // 5 minutes
+					},
+					mutations: {
+						retry: false,
+					},
+				},
+			},
 		};
 	},
 	/**
