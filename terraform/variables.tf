@@ -20,6 +20,7 @@ variable "database_url" {
 	description = "PostgreSQL database connection URL"
 	type        = string
 	sensitive   = true
+	default     = ""
 }
 
 variable "nextauth_secret" {
@@ -31,6 +32,7 @@ variable "nextauth_secret" {
 variable "nextauth_url" {
 	description = "NextAuth.js base URL for authentication callbacks"
 	type        = string
+	default     = ""
 }
 
 variable "supabase_url" {

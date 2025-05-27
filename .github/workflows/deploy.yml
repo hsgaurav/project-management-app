@@ -56,20 +56,63 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Create Terraform State Resources
+        run: |
+          # Create S3 bucket for terraform state if it doesn't exist
+          if ! aws s3 ls "s3://project-management-app-terraform-state" 2>/dev/null; then
+            aws s3 mb s3://project-management-app-terraform-state --region us-east-1
+            aws s3api put-bucket-versioning --bucket project-management-app-terraform-state --versioning-configuration Status=Enabled
+            aws s3api put-bucket-encryption --bucket project-management-app-terraform-state --server-side-encryption-configuration '{
+              "Rules": [
+                {
+                  "ApplyServerSideEncryptionByDefault": {
+                    "SSEAlgorithm": "AES256"
+                  }
+                }
+              ]
+            }'
+            echo "Created S3 bucket for terraform state"
+          fi
+          
+          # Create DynamoDB table for state locking if it doesn't exist
+          if ! aws dynamodb describe-table --table-name terraform-state-lock 2>/dev/null; then
+            aws dynamodb create-table \
+              --table-name terraform-state-lock \
+              --attribute-definitions AttributeName=LockID,AttributeType=S \
+              --key-schema AttributeName=LockID,KeyType=HASH \
+              --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+              --region us-east-1
+            aws dynamodb wait table-exists --table-name terraform-state-lock
+            echo "Created DynamoDB table for terraform state locking"
+          fi
+
       - name: Terraform Init
-        run: terraform init
+        run: |
+          echo "Initializing Terraform..."
+          terraform init -no-color
+          echo "Terraform initialization completed"
 
       - name: Terraform Plan
+        timeout-minutes: 5
         run: |
-          terraform plan \
+          echo "Starting Terraform plan..."
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Stage: ${{ env.STAGE }}"
+          
+          terraform plan -no-color \
             -var="stage=${{ inputs.environment }}" \
+            -var="database_url=${{ secrets.TF_SUPABASE_URL }}" \
             -var="nextauth_secret=${{ secrets.TF_NEXTAUTH_SECRET }}" \
+            -var="nextauth_url=https://${{ env.APP_NAME }}-${{ inputs.environment }}.sst.dev" \
             -var="supabase_url=${{ secrets.TF_SUPABASE_URL }}" \
             -var="supabase_anon_key=${{ secrets.TF_SUPABASE_ANON_KEY }}" \
             -var="supabase_service_role_key=${{ secrets.TF_SUPABASE_SERVICE_ROLE_KEY }}" \
             -out=tfplan
+          
+          echo "Terraform plan completed successfully"
 
       - name: Terraform Apply
+        timeout-minutes: 10
         run: terraform apply -auto-approve tfplan
 
   deploy:
