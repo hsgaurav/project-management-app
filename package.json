@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@8.10.5",
+  "engines": {
+    "node": ">=20.18.0",
+    "pnpm": ">=8.10.5"
+  },
   "scripts": {
     "build": "next build",
     "dev": "cross-env SKIP_ENV_VALIDATION=true next dev",
