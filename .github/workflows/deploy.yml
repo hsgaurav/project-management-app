@@ -1,34 +1,80 @@
-name: Deployment
+name: Deploy to AWS
 
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to deploy to'
-        required: true
-        type: choice
-        options:
-        - dev
-        - prod
-      branch:
-        description: 'Branch to deploy from'
-        required: true
-        default: 'main'
-        type: string
   workflow_call:
     inputs:
       environment:
-        description: 'Environment to deploy to'
         required: true
         type: string
       branch:
-        description: 'Branch to deploy from'
         required: true
         type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      TF_NEXTAUTH_SECRET:
+        required: true
+      TF_SUPABASE_URL:
+        required: true
+      TF_SUPABASE_ANON_KEY:
+        required: true
+      TF_SUPABASE_SERVICE_ROLE_KEY:
+        required: true
+
+env:
+  TF_VAR_stage: ${{ inputs.environment }}
+  APP_NAME: project-management-app
+  STAGE: ${{ inputs.environment }}
 
 jobs:
+  terraform:
+    name: Deploy Infrastructure
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.0"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: |
+          terraform plan \
+            -var="stage=${{ inputs.environment }}" \
+            -var="nextauth_secret=${{ secrets.TF_NEXTAUTH_SECRET }}" \
+            -var="supabase_url=${{ secrets.TF_SUPABASE_URL }}" \
+            -var="supabase_anon_key=${{ secrets.TF_SUPABASE_ANON_KEY }}" \
+            -var="supabase_service_role_key=${{ secrets.TF_SUPABASE_SERVICE_ROLE_KEY }}" \
+            -out=tfplan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+
   deploy:
     name: Deploy Application
+    needs: terraform
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
 
@@ -38,10 +84,17 @@ jobs:
         with:
           ref: ${{ inputs.branch }}
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '18'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -51,115 +104,41 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.5.0
-
-      - name: Terraform Init
-        working-directory: terraform
-        run: terraform init
-
-      - name: Terraform Plan
-        working-directory: terraform
+      - name: Fetch environment variables from SSM
         run: |
-          terraform plan \
-            -var="stage=${{ inputs.environment }}" \
-            -var="database_url=${{ secrets.TF_DATABASE_URL }}" \
-            -var="nextauth_secret=${{ secrets.TF_NEXTAUTH_SECRET }}" \
-            -var="nextauth_url=${{ secrets.TF_NEXTAUTH_URL }}" \
-            -var="discord_client_id=${{ secrets.TF_DISCORD_CLIENT_ID }}" \
-            -var="discord_client_secret=${{ secrets.TF_DISCORD_CLIENT_SECRET }}" \
-            -var="supabase_url=${{ secrets.TF_SUPABASE_URL }}" \
-            -var="supabase_anon_key=${{ secrets.TF_SUPABASE_ANON_KEY }}" \
-            -var="supabase_service_role_key=${{ secrets.TF_SUPABASE_SERVICE_ROLE_KEY }}" \
-            -out=tfplan
-
-      - name: Terraform Apply
-        working-directory: terraform
-        run: terraform apply -auto-approve tfplan
-
-      - name: Load environment variables
-        run: |
-          APP_NAME="project-management-app"
-          STAGE="${{ inputs.environment }}"
-          
           DATABASE_URL=$(aws ssm get-parameter --name "/$APP_NAME/$STAGE/DATABASE_URL" --with-decryption --query 'Parameter.Value' --output text 2>/dev/null || echo "")
           NEXTAUTH_SECRET=$(aws ssm get-parameter --name "/$APP_NAME/$STAGE/NEXTAUTH_SECRET" --with-decryption --query 'Parameter.Value' --output text 2>/dev/null || echo "")
-          NEXTAUTH_URL=$(aws ssm get-parameter --name "/$APP_NAME/$STAGE/NEXTAUTH_URL" --query 'Parameter.Value' --output text 2>/dev/null || echo "")
-          DISCORD_CLIENT_ID=$(aws ssm get-parameter --name "/$APP_NAME/$STAGE/DISCORD_CLIENT_ID" --with-decryption --query 'Parameter.Value' --output text 2>/dev/null || echo "")
-          DISCORD_CLIENT_SECRET=$(aws ssm get-parameter --name "/$APP_NAME/$STAGE/DISCORD_CLIENT_SECRET" --with-decryption --query 'Parameter.Value' --output text 2>/dev/null || echo "")
-          NEXT_PUBLIC_SUPABASE_URL=$(aws ssm get-parameter --name "/$APP_NAME/$STAGE/NEXT_PUBLIC_SUPABASE_URL" --query 'Parameter.Value' --output text 2>/dev/null || echo "")
+          NEXTAUTH_URL=$(aws ssm get-parameter --name "/$APP_NAME/$STAGE/NEXTAUTH_URL" --with-decryption --query 'Parameter.Value' --output text 2>/dev/null || echo "")
+          NEXT_PUBLIC_SUPABASE_URL=$(aws ssm get-parameter --name "/$APP_NAME/$STAGE/NEXT_PUBLIC_SUPABASE_URL" --with-decryption --query 'Parameter.Value' --output text 2>/dev/null || echo "")
           NEXT_PUBLIC_SUPABASE_ANON_KEY=$(aws ssm get-parameter --name "/$APP_NAME/$STAGE/NEXT_PUBLIC_SUPABASE_ANON_KEY" --with-decryption --query 'Parameter.Value' --output text 2>/dev/null || echo "")
           SUPABASE_SERVICE_ROLE_KEY=$(aws ssm get-parameter --name "/$APP_NAME/$STAGE/SUPABASE_SERVICE_ROLE_KEY" --with-decryption --query 'Parameter.Value' --output text 2>/dev/null || echo "")
           
-          [[ -z "$DATABASE_URL" || "$DATABASE_URL" == "None" ]] && DATABASE_URL="${{ secrets.TF_DATABASE_URL }}"
+          [[ -z "$DATABASE_URL" ]] && DATABASE_URL="${{ secrets.TF_DATABASE_URL }}"
           [[ -z "$NEXTAUTH_SECRET" ]] && NEXTAUTH_SECRET="${{ secrets.TF_NEXTAUTH_SECRET }}"
-          [[ -z "$NEXTAUTH_URL" ]] && NEXTAUTH_URL="${{ secrets.TF_NEXTAUTH_URL }}"
-          [[ -z "$DISCORD_CLIENT_ID" ]] && DISCORD_CLIENT_ID="${{ secrets.TF_DISCORD_CLIENT_ID }}"
-          [[ -z "$DISCORD_CLIENT_SECRET" ]] && DISCORD_CLIENT_SECRET="${{ secrets.TF_DISCORD_CLIENT_SECRET }}"
+          [[ -z "$NEXTAUTH_URL" ]] && NEXTAUTH_URL="https://$APP_NAME-$STAGE.sst.dev"
           [[ -z "$NEXT_PUBLIC_SUPABASE_URL" ]] && NEXT_PUBLIC_SUPABASE_URL="${{ secrets.TF_SUPABASE_URL }}"
           [[ -z "$NEXT_PUBLIC_SUPABASE_ANON_KEY" ]] && NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.TF_SUPABASE_ANON_KEY }}"
           [[ -z "$SUPABASE_SERVICE_ROLE_KEY" ]] && SUPABASE_SERVICE_ROLE_KEY="${{ secrets.TF_SUPABASE_SERVICE_ROLE_KEY }}"
           
-          # Export to environment
-          {
-            echo "DATABASE_URL=$DATABASE_URL"
-            echo "DIRECT_URL=$DATABASE_URL"
-            echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET"
-            echo "NEXTAUTH_URL=$NEXTAUTH_URL"
-            echo "DISCORD_CLIENT_ID=$DISCORD_CLIENT_ID"
-            echo "DISCORD_CLIENT_SECRET=$DISCORD_CLIENT_SECRET"
-            echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL"
-            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY"
-            echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY"
-          } >> $GITHUB_ENV
+          echo "DATABASE_URL=$DATABASE_URL" >> $GITHUB_ENV
+          echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> $GITHUB_ENV
+          echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> $GITHUB_ENV
 
-      - name: Validate environment variables
+      - name: Validate required environment variables
         run: |
-          REQUIRED_VARS=("DATABASE_URL" "NEXTAUTH_SECRET" "DISCORD_CLIENT_ID" "DISCORD_CLIENT_SECRET" "NEXT_PUBLIC_SUPABASE_URL" "NEXT_PUBLIC_SUPABASE_ANON_KEY" "SUPABASE_SERVICE_ROLE_KEY")
+          REQUIRED_VARS=("DATABASE_URL" "NEXTAUTH_SECRET" "NEXT_PUBLIC_SUPABASE_URL" "NEXT_PUBLIC_SUPABASE_ANON_KEY" "SUPABASE_SERVICE_ROLE_KEY")
           
           for var in "${REQUIRED_VARS[@]}"; do
             if [[ -z "${!var}" ]]; then
-              echo "Error: Required environment variable $var is not set"
+              echo "❌ Error: Required environment variable $var is not set"
               exit 1
             fi
           done
+          
+          echo "✅ All required environment variables are set"
 
-      - name: Setup database environment
-        run: |
-          cat > .env << EOF
-          DATABASE_URL="$DATABASE_URL"
-          DIRECT_URL="$DATABASE_URL"
-          NODE_ENV="production"
-          EOF
-
-      - name: Test database connection
-        run: |
-          echo "Testing database connectivity..."
-          pnpm db:generate
-          echo "SELECT 1;" | timeout 30 npx prisma db execute --stdin --url="$DATABASE_URL"
-
-      - name: Run database migrations
-        run: |
-          pnpm db:generate
-          pnpm db:migrate:deploy
-
-      - name: Seed database
-        if: inputs.environment == 'dev'
-        run: pnpm db:seed
-        continue-on-error: true
-
-      - name: Deploy application
-        run: pnpm dlx sst deploy --stage ${{ inputs.environment }}
-
-      - name: Cleanup
-        if: always()
-        run: rm -f .env 
+      - name: Deploy with SST
+        run: pnpm sst deploy --stage ${{ inputs.environment }} 

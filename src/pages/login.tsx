@@ -115,11 +115,16 @@ export default function Login() {
 										onChange={(e) => setPassword(e.target.value)}
 										className="block w-full rounded-xl border border-gray-300 py-3 pl-12 pr-12 text-base text-gray-700 placeholder-gray-400 transition-all duration-200 focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500"
 										placeholder="Enter your password"
+										data-reveal="false"
+										data-ms-editor="false"
 									/>
 									<button
 										type="button"
-										className="absolute inset-y-0 right-0 flex items-center pr-4"
+										className="absolute inset-y-0 right-0 z-10 flex items-center pr-4 focus:outline-none"
 										onClick={() => setShowPassword(!showPassword)}
+										aria-label={
+											showPassword ? "Hide password" : "Show password"
+										}
 									>
 										{showPassword ? (
 											<EyeOff className="h-5 w-5 text-gray-400 transition-colors hover:text-gray-600" />
@@ -148,7 +153,7 @@ export default function Login() {
 
 								<div className="text-sm">
 									<Link
-										href="/auth/forgot-password"
+										href="/forgot-password"
 										className="font-medium text-coral-500 transition-colors hover:text-coral-600"
 									>
 										Forgot password?
@@ -188,7 +193,7 @@ export default function Login() {
 
 							<div className="mt-6 text-center">
 								<Link
-									href="/auth/signup"
+									href="/signup"
 									className="inline-flex items-center rounded-xl border border-gray-300 bg-white px-6 py-3 text-base font-medium text-gray-700 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-coral-500 focus:ring-offset-2"
 								>
 									Create an account

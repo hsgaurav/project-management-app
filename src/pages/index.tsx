@@ -1,9 +1,11 @@
-import { type NextPage } from "next";
+import { type NextPage, type GetServerSidePropsContext } from "next";
+import { getServerSession } from "next-auth/next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { api } from "@/utils/api";
+import { authOptions } from "@/server/auth";
 
 const Home: NextPage = () => {
 	const hello = api.post.hello.useQuery({ text: "from tRPC" });
@@ -27,24 +29,22 @@ const Home: NextPage = () => {
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
 						<Link
 							className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-							href="https://create.t3.gg/en/usage/first-steps"
-							target="_blank"
+							href="/signup"
 						>
-							<h3 className="text-2xl font-bold">First Steps →</h3>
+							<h3 className="text-2xl font-bold">Get Started →</h3>
 							<div className="text-lg">
-								Just the basics - Everything you need to know to set up your
-								database and authentication.
+								Create your account and start managing your projects with our
+								powerful tools.
 							</div>
 						</Link>
 						<Link
 							className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-							href="https://create.t3.gg/en/introduction"
-							target="_blank"
+							href="/login"
 						>
-							<h3 className="text-2xl font-bold">Documentation →</h3>
+							<h3 className="text-2xl font-bold">Sign In →</h3>
 							<div className="text-lg">
-								Learn more about Create T3 App, the libraries it uses, and how
-								to deploy it.
+								Already have an account? Sign in to access your dashboard and
+								projects.
 							</div>
 						</Link>
 					</div>
@@ -85,3 +85,20 @@ const AuthShowcase: React.FC = () => {
 		</div>
 	);
 };
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+	const session = await getServerSession(context.req, context.res, authOptions);
+
+	if (session) {
+		return {
+			redirect: {
+				destination: "/dashboard",
+				permanent: false,
+			},
+		};
+	}
+
+	return {
+		props: {},
+	};
+}
