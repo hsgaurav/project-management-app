@@ -29,7 +29,7 @@ export function Navigation({
 
 	return (
 		<nav className="border-b border-gray-200 bg-white shadow-sm">
-			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+			<div className="min-w-[-webkit-fill-available] max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="flex h-16 justify-between">
 					<div className="flex items-center gap-8">
 						<div className="flex items-center">
